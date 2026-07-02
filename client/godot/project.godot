@@ -18,6 +18,8 @@ config/features=PackedStringArray("4.7")
 
 NetworkManager="*res://autoload/NetworkManager.gd"
 ResourceManager="*res://core/resources/ResourceManager.gd"
+EntityRegistry="*res://core/entities/EntityRegistry.gd"
+EntityFactory="*res://core/entities/EntityFactory.gd"
 
 [display]
 

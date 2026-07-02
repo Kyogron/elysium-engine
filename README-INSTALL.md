@@ -1,19 +1,17 @@
-# Instalação — Sprint 3.1
+# Sprint 3.3 — EntityFactory
 
-1. Extraia este pacote fora do repositório.
-2. Copie as pastas `client/` e `docs/` para a raiz do repositório.
-3. Edite `client/godot/project.godot` e adicione em `[autoload]`:
+## Instalação
 
-```ini
-ResourceManager="*res://core/resources/ResourceManager.gd"
-```
+Extraia este pacote na raiz do repositório.
 
-Exemplo:
+Depois adicione no `client/godot/project.godot`, em `[autoload]`:
 
 ```ini
-[autoload]
-NetworkManager="*res://autoload/NetworkManager.gd"
-ResourceManager="*res://core/resources/ResourceManager.gd"
+EntityFactory="*res://core/entities/EntityFactory.gd"
 ```
 
-4. Abra o projeto no Godot e execute.
+## Teste
+
+Abra o Godot e confira se não aparecem erros.
+
+Na próxima sprint, o `WorldManager` usará a `EntityFactory` para criar entidades automaticamente a partir de snapshots.

@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_red"]
+albedo_color = Color(1, 0.15, 0.12, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tower"]
+top_radius = 0.35
+bottom_radius = 0.55
+height = 2.2
+
+[node name="TowerRed" type="Node3D"]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_tower")
+surface_material_override/0 = SubResource("StandardMaterial3D_red")
+position = Vector3(0, 1.1, 0)

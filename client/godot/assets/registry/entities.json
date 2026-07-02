@@ -1,0 +1,20 @@
+{
+  "champion_placeholder": {
+    "kind": "champion",
+    "displayName": "Champion Placeholder",
+    "model": "res://assets/entities/champion_placeholder.tscn",
+    "scale": 1.0
+  },
+  "tower_blue_placeholder": {
+    "kind": "structure",
+    "displayName": "Blue Tower Placeholder",
+    "model": "res://assets/entities/tower_blue_placeholder.tscn",
+    "scale": 1.0
+  },
+  "tower_red_placeholder": {
+    "kind": "structure",
+    "displayName": "Red Tower Placeholder",
+    "model": "res://assets/entities/tower_red_placeholder.tscn",
+    "scale": 1.0
+  }
+}

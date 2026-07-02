@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blue"]
+albedo_color = Color(0.2, 0.45, 1, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_champion"]
+radius = 0.45
+height = 1.6
+
+[node name="ChampionPlaceholder" type="Node3D"]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_champion")
+surface_material_override/0 = SubResource("StandardMaterial3D_blue")
+position = Vector3(0, 0.8, 0)
