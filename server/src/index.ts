@@ -1,24 +1,17 @@
-import { WebSocketServer } from "ws";
+import { WebSocketGateway } from "./network/WebSocketGateway.js";
+import { SnapshotSystem } from "./world/SnapshotSystem.js";
+import { WorldState } from "./world/WorldState.js";
+import { log } from "./utils/logger.js";
 
 const PORT = Number(process.env.PORT ?? 8080);
+const SNAPSHOT_RATE_MS = 100;
 
-const wss = new WebSocketServer({ port: PORT });
+const world = new WorldState();
+const gateway = new WebSocketGateway(PORT, world);
+const snapshotSystem = new SnapshotSystem(world, gateway, SNAPSHOT_RATE_MS);
 
-wss.on("connection", (socket) => {
-  socket.send(JSON.stringify({
-    type: "server.hello",
-    payload: {
-      name: "Elysium Engine",
-      version: "0.1.0"
-    }
-  }));
+gateway.start();
+snapshotSystem.start();
 
-  socket.on("message", (data) => {
-    socket.send(JSON.stringify({
-      type: "server.echo",
-      payload: data.toString()
-    }));
-  });
-});
-
-console.log(`[Elysium] Server listening on ws://localhost:${PORT}`);
+log(`Server listening on ws://localhost:${PORT}`);
+log(`Snapshot rate: ${SNAPSHOT_RATE_MS}ms`);

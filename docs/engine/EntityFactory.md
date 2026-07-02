@@ -1,15 +1,17 @@
 # EntityFactory
 
-A `EntityFactory` instancia entidades do mundo a partir do `EntityRegistry`.
+`EntityFactory` creates `Node3D` instances from entity types.
 
-## Responsabilidades
+It reads definitions from `EntityRegistry`. If a future `model` path exists, the factory can instantiate that `PackedScene`. If no model exists, it creates a procedural placeholder mesh using the registry shape, color and scale.
 
-- Receber uma chave de entidade, como `champion_placeholder` ou `tower_blue`.
-- Consultar a definição no `EntityRegistry`.
-- Carregar a cena usando `ResourceManager`.
-- Instanciar um `Node3D`.
-- Aplicar metadados, escala e nome.
+Current placeholder shapes:
 
-## Regra importante
+- `capsule`
+- `box`
+- `cylinder`
 
-O jogo não deve instanciar entidades diretamente com `preload()` espalhado pelo código. A criação passa pela `EntityFactory`.
+Main API:
+
+```gdscript
+func create_entity(entity_type: String, entity_id: String = "") -> Node3D
+```

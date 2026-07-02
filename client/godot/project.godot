@@ -21,6 +21,9 @@ ResourceManager="*res://core/resources/ResourceManager.gd"
 EntityRegistry="*res://core/entities/EntityRegistry.gd"
 EntityFactory="*res://core/entities/EntityFactory.gd"
 WorldManager="*res://core/world/WorldManager.gd"
+SnapshotReceiver="*res://core/network/SnapshotReceiver.gd"
+CameraController="*res://core/camera/CameraController.gd"
+InputController="*res://core/input/InputController.gd"
 
 [display]
 

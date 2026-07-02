@@ -1,0 +1,30 @@
+{
+  "champion_placeholder": {
+    "kind": "champion",
+    "displayName": "Champion Placeholder",
+    "shape": "capsule",
+    "color": "#3b82f6",
+    "scale": 1.0
+  },
+  "minion_placeholder": {
+    "kind": "minion",
+    "displayName": "Minion Placeholder",
+    "shape": "box",
+    "color": "#22c55e",
+    "scale": 0.7
+  },
+  "tower_placeholder": {
+    "kind": "structure",
+    "displayName": "Tower Placeholder",
+    "shape": "cylinder",
+    "color": "#eab308",
+    "scale": 1.4
+  },
+  "base_placeholder": {
+    "kind": "structure",
+    "displayName": "Base Placeholder",
+    "shape": "box",
+    "color": "#ef4444",
+    "scale": 2.0
+  }
+}

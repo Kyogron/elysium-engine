@@ -1,101 +1,114 @@
-extends Node3D
+extends Node
 
-## WorldManager
-## Keeps the client-side visual world synchronized with server/entity snapshots.
-## It does not own gameplay rules; the server remains authoritative.
+## Keeps the client-side visual world synchronized with authoritative snapshots.
 
 var entities := {}
+var world_root: Node3D = null
 
-func clear_world() -> void:
-	for entity_id in entities.keys():
-		var node = entities[entity_id]
-		if is_instance_valid(node):
-			node.queue_free()
-	entities.clear()
-
-func has_entity(entity_id) -> bool:
-	return entities.has(str(entity_id))
-
-func get_entity(entity_id) -> Node3D:
-	return entities.get(str(entity_id), null)
-
-func spawn_entity(snapshot: Dictionary) -> Node3D:
-	var entity_id := str(snapshot.get("id", ""))
-	var entity_type := str(snapshot.get("type", ""))
-
-	if entity_id.is_empty():
-		push_error("[WorldManager] Snapshot sem id.")
-		return null
-
-	if entity_type.is_empty():
-		push_error("[WorldManager] Snapshot sem type para id: " + entity_id)
-		return null
-
-	if has_entity(entity_id):
-		return get_entity(entity_id)
-
-	var node = EntityFactory.create_entity(entity_type)
-	if node == null:
-		push_error("[WorldManager] Falha ao criar entidade: " + entity_type)
-		return null
-
-	node.name = "Entity_" + entity_id + "_" + entity_type
-	add_child(node)
-	entities[entity_id] = node
-	apply_snapshot_to_node(node, snapshot)
-	return node
-
-func remove_entity(entity_id) -> void:
-	var key := str(entity_id)
-	if not entities.has(key):
-		return
-
-	var node = entities[key]
-	if is_instance_valid(node):
-		node.queue_free()
-	entities.erase(key)
+func set_world_root(root: Node3D) -> void:
+	world_root = root
 
 func apply_snapshot(snapshot: Dictionary) -> void:
-	var entity_id := str(snapshot.get("id", ""))
-	if entity_id.is_empty():
-		push_error("[WorldManager] Snapshot sem id.")
+	var payload = snapshot.get("payload", snapshot)
+	if typeof(payload) != TYPE_DICTIONARY:
+		push_error("[WorldManager] Snapshot payload must be a Dictionary.")
 		return
 
-	var node = get_entity(entity_id)
-	if node == null:
-		node = spawn_entity(snapshot)
+	var snapshot_entities = payload.get("entities", [])
+	if typeof(snapshot_entities) != TYPE_ARRAY:
+		push_error("[WorldManager] Snapshot entities must be an Array.")
 		return
 
-	apply_snapshot_to_node(node, snapshot)
-
-func apply_snapshot_batch(snapshots: Array) -> void:
 	var alive_ids := {}
-
-	for snapshot in snapshots:
-		if typeof(snapshot) != TYPE_DICTIONARY:
+	for entity_data in snapshot_entities:
+		if typeof(entity_data) != TYPE_DICTIONARY:
 			continue
 
-		var entity_id := str(snapshot.get("id", ""))
+		var entity_id := str(entity_data.get("id", ""))
 		if entity_id.is_empty():
 			continue
 
 		alive_ids[entity_id] = true
-		apply_snapshot(snapshot)
+		spawn_or_update_entity(entity_data)
 
-	var current_ids := entities.keys()
-	for entity_id in current_ids:
+	for entity_id in entities.keys():
 		if not alive_ids.has(entity_id):
 			remove_entity(entity_id)
 
-func apply_snapshot_to_node(node: Node3D, snapshot: Dictionary) -> void:
-	if snapshot.has("position"):
-		var pos = snapshot.get("position")
-		if typeof(pos) == TYPE_ARRAY and pos.size() >= 3:
-			node.position = Vector3(float(pos[0]), float(pos[1]), float(pos[2]))
+func spawn_or_update_entity(entity_data: Dictionary) -> void:
+	var entity_id := str(entity_data.get("id", ""))
+	var entity_type := str(entity_data.get("type", ""))
 
-	if snapshot.has("rotation_y"):
-		node.rotation.y = float(snapshot.get("rotation_y"))
+	if entity_id.is_empty():
+		push_error("[WorldManager] Entity data without id.")
+		return
 
-	if snapshot.has("scale"):
-		var s = float(snapshot.get("scale"))
-		node.scale = Vector3(s, s, s)
+	if entity_type.is_empty():
+		push_error("[WorldManager] Entity data without type for id: " + entity_id)
+		return
+
+	var node: Node3D = entities.get(entity_id, null)
+	if node == null:
+		node = EntityFactory.create_entity(entity_type, entity_id)
+		if node == null:
+			push_error("[WorldManager] Failed to create entity: " + entity_type)
+			return
+
+		node.name = "Entity_" + entity_id
+		_get_world_root().add_child(node)
+		entities[entity_id] = node
+
+	_apply_entity_state(node, entity_data)
+
+func remove_entity(entity_id: String) -> void:
+	if not entities.has(entity_id):
+		return
+
+	var node = entities[entity_id]
+	if is_instance_valid(node):
+		node.queue_free()
+	entities.erase(entity_id)
+
+func clear_world() -> void:
+	for entity_id in entities.keys():
+		remove_entity(entity_id)
+	entities.clear()
+
+func has_entity(entity_id: String) -> bool:
+	return entities.has(entity_id)
+
+func get_entity(entity_id: String) -> Node3D:
+	return entities.get(entity_id, null)
+
+func apply_snapshot_batch(snapshots: Array) -> void:
+	apply_snapshot({ "payload": { "entities": snapshots } })
+
+func _apply_entity_state(node: Node3D, entity_data: Dictionary) -> void:
+	if entity_data.has("position"):
+		node.position = _vector_from_dictionary(entity_data["position"])
+
+	if entity_data.has("rotation"):
+		node.rotation = _vector_from_dictionary(entity_data["rotation"])
+
+func _vector_from_dictionary(value) -> Vector3:
+	if typeof(value) == TYPE_DICTIONARY:
+		return Vector3(
+			float(value.get("x", 0.0)),
+			float(value.get("y", 0.0)),
+			float(value.get("z", 0.0))
+		)
+
+	if typeof(value) == TYPE_ARRAY and value.size() >= 3:
+		return Vector3(float(value[0]), float(value[1]), float(value[2]))
+
+	return Vector3.ZERO
+
+func _get_world_root() -> Node3D:
+	if world_root != null and is_instance_valid(world_root):
+		return world_root
+
+	var fallback := Node3D.new()
+	fallback.name = "WorldRoot"
+	get_tree().current_scene.add_child(fallback)
+	world_root = fallback
+	return world_root

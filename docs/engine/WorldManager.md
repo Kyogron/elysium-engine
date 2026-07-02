@@ -1,43 +1,15 @@
 # WorldManager
 
-O `WorldManager` é responsável por manter a representação visual do mundo sincronizada com os snapshots do servidor.
+`WorldManager` owns the client-side map of `entity_id -> Node3D`.
 
-## Responsabilidades
+It receives snapshots from `SnapshotReceiver`, creates missing entities through `EntityFactory`, updates positions and rotations, and removes entities that disappear from the latest snapshot.
 
-- Criar entidades usando `EntityFactory`.
-- Atualizar posição, rotação e escala de entidades existentes.
-- Remover entidades que não aparecem mais no snapshot.
-- Manter o mapa `entityId -> Node3D`.
+Main API:
 
-## Importante
-
-O `WorldManager` não decide regras de jogo. Ele apenas representa visualmente o estado autoritativo recebido do servidor.
-
-## Snapshot esperado
-
-```json
-{
-  "id": "player-1",
-  "type": "champion_placeholder",
-  "position": [0, 0, 0],
-  "rotation_y": 0,
-  "scale": 1
-}
-```
-
-## Batch esperado
-
-```json
-[
-  {
-    "id": "player-1",
-    "type": "champion_placeholder",
-    "position": [0, 0, 0]
-  },
-  {
-    "id": "tower-blue-1",
-    "type": "tower_blue",
-    "position": [10, 0, 0]
-  }
-]
+```gdscript
+func set_world_root(root: Node3D) -> void
+func apply_snapshot(snapshot: Dictionary) -> void
+func spawn_or_update_entity(entity_data: Dictionary) -> void
+func remove_entity(entity_id: String) -> void
+func clear_world() -> void
 ```
