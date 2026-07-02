@@ -18,7 +18,9 @@ func create_entity(entity_type: String, entity_id: String = "") -> Node3D:
 	instance.name = entity_id if entity_id != "" else entity_type
 	instance.set_meta("entity_type", entity_type)
 	instance.set_meta("entity_id", entity_id)
+	instance.set_meta("faction", str(definition.get("faction", "")))
 	instance.scale = Vector3.ONE * float(definition.get("scale", 1.0))
+	_ensure_selection_collider(instance, definition)
 	return instance
 
 func _instantiate_model(path: String) -> Node3D:
@@ -39,6 +41,35 @@ func _create_placeholder(definition: Dictionary) -> Node3D:
 	visual.material_override = _build_material(str(definition.get("color", "#ffffff")))
 	root.add_child(visual)
 	return root
+
+func _ensure_selection_collider(root: Node3D, definition: Dictionary) -> void:
+	var body := StaticBody3D.new()
+	body.name = "SelectionCollider"
+	body.set_meta("entity_id", root.get_meta("entity_id", ""))
+	body.set_meta("entity_type", root.get_meta("entity_type", ""))
+	body.set_meta("faction", root.get_meta("faction", ""))
+
+	var shape_node := CollisionShape3D.new()
+	shape_node.shape = _build_collision_shape(str(definition.get("shape", "box")))
+	body.add_child(shape_node)
+	root.add_child(body)
+
+func _build_collision_shape(shape: String) -> Shape3D:
+	match shape:
+		"capsule":
+			var capsule := CapsuleShape3D.new()
+			capsule.radius = 0.55
+			capsule.height = 1.6
+			return capsule
+		"cylinder":
+			var cylinder := CylinderShape3D.new()
+			cylinder.radius = 0.75
+			cylinder.height = 2.3
+			return cylinder
+		_:
+			var box := BoxShape3D.new()
+			box.size = Vector3(1.2, 1.2, 1.2)
+			return box
 
 func _build_mesh(shape: String) -> Mesh:
 	match shape:

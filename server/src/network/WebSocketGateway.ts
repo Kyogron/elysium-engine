@@ -9,6 +9,7 @@ export class WebSocketGateway {
   constructor(
     private readonly port: number,
     private readonly world: WorldState,
+    private readonly snapshotRateMs: number,
   ) {}
 
   start(): void {
@@ -34,7 +35,8 @@ export class WebSocketGateway {
       type: "server.hello",
       payload: {
         name: "Elysium Engine",
-        version: "0.2.0",
+        version: "0.3.0",
+        snapshotRateMs: this.snapshotRateMs,
       },
     }));
 

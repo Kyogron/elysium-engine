@@ -1,10 +1,21 @@
 # Camera System
 
-`CameraController` creates the runtime MOBA camera.
+`CameraController` creates the runtime MOBA camera. It does not rely on a manually placed camera in the scene.
 
-- Perspective camera.
-- Oblique rotation near X `-55` degrees and Y `45` degrees.
-- Initial distance around 22 units.
-- Mouse wheel zooms between 12 and 32 units.
+Runtime hierarchy:
 
-The camera is created by code from the main bootstrap scene so gameplay scenes remain procedural.
+```txt
+CameraRig
+└── Pivot
+    └── Camera3D
+```
+
+Behavior:
+
+- `CameraRig` follows the local player entity, currently `player_1`.
+- `CameraRig` controls yaw, currently around `45` degrees.
+- `Pivot` controls pitch, currently around `-55` degrees.
+- `Camera3D` sits at a zoomable distance from the pivot.
+- Mouse wheel zoom clamps between minimum and maximum distances.
+
+The rig structure is intentionally ready for later edge scrolling, spectator camera modes and replay camera controls.

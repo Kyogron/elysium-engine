@@ -1,7 +1,13 @@
 # Input System
 
-`InputController` listens for right-clicks on the ground.
+`InputController` converts local player input into engine-level intent.
 
-When a raycast hits the ground collider it sends a `player.move` message through `NetworkManager`.
+Controls:
 
-The client does not move the champion locally. Movement appears only when the server updates entity positions in `world.snapshot`.
+- Right-click raycasts from the camera and emits `move_requested(target)`.
+- `Main.gd` listens for `move_requested` and sends `player.move` through `NetworkManager`.
+- Left-click raycasts for entity colliders and selects entities through `SelectionManager`.
+- `ESC` clears selection.
+- `F3` toggles `DebugOverlay`.
+
+The controller avoids directly deciding authoritative movement. It detects player intent; the server decides the resulting state.

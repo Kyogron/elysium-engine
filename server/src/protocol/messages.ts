@@ -12,6 +12,7 @@ export type Health = {
 export type WorldEntitySnapshot = {
   id: string;
   type: string;
+  faction?: string;
   position: Vector3;
   rotation: Vector3;
   health: Health;
@@ -20,9 +21,10 @@ export type WorldEntitySnapshot = {
 export type ServerHelloMessage = {
   type: "server.hello";
   payload: {
-    name: string;
-    version: string;
-  };
+      name: string;
+      version: string;
+      snapshotRateMs: number;
+    };
 };
 
 export type WorldSnapshotMessage = {

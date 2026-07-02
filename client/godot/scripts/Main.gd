@@ -9,7 +9,9 @@ func _ready() -> void:
 	_build_ui()
 	WorldManager.set_world_root(world_root)
 	camera = CameraController.setup(self)
+	CameraController.set_follow_entity("player_1")
 	InputController.setup(camera)
+	InputController.move_requested.connect(_on_move_requested)
 	NetworkManager.connected_to_server.connect(_on_connected)
 	NetworkManager.disconnected_from_server.connect(_on_disconnected)
 	NetworkManager.message_received.connect(_on_message_received)
@@ -83,3 +85,12 @@ func _on_message_received(message: Dictionary) -> void:
 
 	var payload = message.get("payload", {})
 	status_label.text = "Server: " + str(payload.get("name", "")) + " " + str(payload.get("version", "")) + "\nRight-click the ground to move."
+
+func _on_move_requested(target: Vector3) -> void:
+	NetworkManager.send_message("player.move", {
+		"target": {
+			"x": target.x,
+			"y": target.y,
+			"z": target.z
+		}
+	})

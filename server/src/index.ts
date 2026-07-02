@@ -7,7 +7,7 @@ const PORT = Number(process.env.PORT ?? 8080);
 const SNAPSHOT_RATE_MS = 100;
 
 const world = new WorldState();
-const gateway = new WebSocketGateway(PORT, world);
+const gateway = new WebSocketGateway(PORT, world, SNAPSHOT_RATE_MS);
 const snapshotSystem = new SnapshotSystem(world, gateway, SNAPSHOT_RATE_MS);
 
 gateway.start();

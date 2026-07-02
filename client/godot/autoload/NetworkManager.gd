@@ -7,6 +7,7 @@ signal message_received(message: Dictionary)
 var socket := WebSocketPeer.new()
 var connected := false
 var server_url := "ws://localhost:8080"
+var last_connected_at_msec := 0
 
 func connect_to_server(url := server_url) -> void:
 	if socket.get_ready_state() == WebSocketPeer.STATE_OPEN or socket.get_ready_state() == WebSocketPeer.STATE_CONNECTING:
@@ -24,6 +25,7 @@ func _process(_delta: float) -> void:
 	if state == WebSocketPeer.STATE_OPEN:
 		if not connected:
 			connected = true
+			last_connected_at_msec = Time.get_ticks_msec()
 			connected_to_server.emit()
 
 		while socket.get_available_packet_count() > 0:
@@ -46,3 +48,17 @@ func send_message(type: String, payload: Dictionary = {}) -> void:
 		"type": type,
 		"payload": payload
 	}))
+
+func connection_status() -> String:
+	if connected:
+		return "connected"
+
+	match socket.get_ready_state():
+		WebSocketPeer.STATE_CONNECTING:
+			return "connecting"
+		WebSocketPeer.STATE_CLOSING:
+			return "closing"
+		WebSocketPeer.STATE_CLOSED:
+			return "closed"
+		_:
+			return "unknown"

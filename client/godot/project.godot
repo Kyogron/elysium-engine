@@ -24,6 +24,8 @@ WorldManager="*res://core/world/WorldManager.gd"
 SnapshotReceiver="*res://core/network/SnapshotReceiver.gd"
 CameraController="*res://core/camera/CameraController.gd"
 InputController="*res://core/input/InputController.gd"
+SelectionManager="*res://core/input/SelectionManager.gd"
+DebugOverlay="*res://core/debug/DebugOverlay.gd"
 
 [display]
 
